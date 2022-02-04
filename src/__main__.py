@@ -16,7 +16,6 @@ from wgApi import wgApi
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
 
 intents = discord.Intents.default()
 intents.members = True
@@ -32,12 +31,6 @@ scheduler = Scheduler(client, db_handler, mapper, wg_api, clan_utils)
 
 @client.event
 async def on_ready():
-    guild = discord.utils.find(lambda g: g.name == GUILD, client.guilds)
-    print(client.guilds)
-    print(
-        f'{client.user.id} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})'
-    )
     autoupdate.start()
 
 
