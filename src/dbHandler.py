@@ -113,8 +113,8 @@ class DbHandler:
 
     # Idk, you need to close connection after each query to avoid confusion and info loss so there's that workaround
     def reconnect(self):
-        self.con = sqlite3.connect('db/main.db')
+        self.con = sqlite3.connect('main.db')
 
     def __init__(self):
-        self.con = sqlite3.connect('db/main.db')
+        self.con = sqlite3.connect('main.db')
         self.con.close()
