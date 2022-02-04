@@ -20,7 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4578d5f-5539-4422-9edf-e474f19610e5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/initdb.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/initdb.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.db" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/main.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/province.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/province.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,12 +66,12 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\twink\Documents\wot-discord\src" />
       <recent name="C:\Users\twink\Documents\wot-discord\src\db" />
+      <recent name="C:\Users\twink\Documents\wot-discord\src" />
       <recent name="C:\Users\twink\Documents\wot-discord" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.initdb">
+  <component name="RunManager" selected="Python.__main__">
     <configuration name="__main__" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="wot-discord" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -112,8 +116,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.initdb" />
         <item itemvalue="Python.__main__" />
+        <item itemvalue="Python.initdb" />
       </list>
     </recent_temporary>
   </component>
