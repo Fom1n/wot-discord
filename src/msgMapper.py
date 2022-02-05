@@ -1,27 +1,46 @@
 import discord
 
 from src.province import create_view
+from src.region import create_region_view
 
 
 class MessageMapper:
 
     async def mapMessage(self, msg):
 
-        # let's ignore our own messages
+        # All messages
         if msg.author.id == self.client.user.id:
             return
-        if msg.content.startswith('>>provinces'):
-            await msg.channel.send("Please select your options!", view=create_view())
+
+        if msg.content.startswith(">>region") and msg.author.guild_permissions.administrator:
+            await msg.channel.send("Please select your region.", view=create_region_view(self.db_handler))
             return
+        # Check for region
+        region_exists, region = self.check_region(msg)
+        if msg.content.startswith('>>') and not region_exists:
+            await msg.channel.send("You need to select region first.", view=create_region_view(self.db_handler))
+            return
+        if msg.content.startswith('>>provinces'):
+            if region == 'ru':
+                await msg.channel.send(ru['province'], view=create_view(region))
+            else:
+                await msg.channel.send(eu['province'], view=create_view(region))
+            return
+
+        # Admin messages
         if msg.content.startswith('>>') and not msg.author.guild_permissions.administrator:
             await msg.channel.send('I\'m sorry boy, but you can\'t do that here. Go ask pappa to do it.')
             return
-        if msg.content.startswith('>>hello'):
-            await msg.channel.send('Hi!')
         if msg.content.startswith('>>setclan'):
             await self.setClanHandler(msg)
         if msg.content.startswith('>>setchannel'):
             await self.setChannelHandler(msg)
+
+    def check_region(self, msg):
+        region = self.db_handler.getRegion(msg.guild.id)
+        if region is None:
+            return False, region
+        return True, region
 
     async def setChannelHandler(self, msg):
         arr = msg.content.split(" ")
@@ -72,3 +91,11 @@ class MessageMapper:
         self.db_handler = db_handler
         self.wg_api = wg_api
         pass
+
+ru = {
+    'province': "Выберите опции для отображения провинций"
+}
+
+eu = {
+    'province': "Select options to display provinces (select one of the maps None, discord select menu limitation)"
+}

@@ -29,19 +29,19 @@ mapper = MessageMapper(client, db_handler, wg_api)
 scheduler = Scheduler(client, db_handler, mapper, wg_api, clan_utils)
 
 
-@client.event
-async def on_ready():
-    autoupdate.start()
+# @client.event
+# async def on_ready():
+#     autoupdate.start()
 
 
-@tasks.loop(minutes=15)
-async def autoupdate():
-    await scheduler.schedule_sh_update()
-    # await scheduler.schedule_players_fame_points_update()
+# @tasks.loop(minutes=15)
+# async def autoupdate():
+#     await scheduler.schedule_sh_update()
+#     # await scheduler.schedule_players_fame_points_update()
 
-@autoupdate.before_loop
-async def before():
-    await client.wait_until_ready()
+# @autoupdate.before_loop
+# async def before():
+#     await client.wait_until_ready()
 
 
 @client.event

@@ -31,6 +31,28 @@ class DbHandler:
             print(er)
             return True
 
+    def updateRegion(self, guild_id, region):
+        try:
+            exists = self.regionExists(guild_id)
+            if exists:
+                self.updateExistingRegion(guild_id, region)
+            else:
+                self.insertRegion(guild_id, region)
+            return True
+        except sqlite3.Error as er:
+            print(er)
+            return False
+
+    def getRegion(self, guild_id):
+        self.reconnect()
+        cur = self.con.cursor()
+        region = cur.execute('SELECT * FROM region WHERE guildId = ?', [guild_id]).fetchall()
+        self.con.commit()
+        self.con.close()
+        if len(region) == 0:
+            return None
+        return region[0][1]
+
     def getClanAndChannel(self, channel_type):
         self.reconnect()
         cur = self.con.cursor()
@@ -46,6 +68,36 @@ class DbHandler:
         self.con.commit()
         self.con.close()
         return everything
+
+    def regionExists(self, guild_id):
+        self.reconnect()
+
+        cur = self.con.cursor()
+        exists = cur.execute('SELECT EXISTS(SELECT 1 FROM region WHERE guildId = ?);', [guild_id]).fetchall()[0][0]
+        self.con.close()
+        if exists == 1:
+            return True
+        else:
+            return False
+
+    def updateExistingRegion(self, guild_id, region):
+        self.reconnect()
+
+        cur = self.con.cursor()
+        cur.execute("UPDATE region "
+                    "SET region = ?"
+                    "WHERE guildId = ?", [region, guild_id])
+        self.con.commit()
+        self.con.close()
+
+    def insertRegion(self, guild_id, region):
+        self.reconnect()
+
+        cur = self.con.cursor()
+        cur.execute("INSERT INTO region VALUES (?, ?)", [guild_id, region])
+
+        self.con.commit()
+        self.con.close()
 
     def guildClanExists(self, guild_id):
         self.reconnect()
