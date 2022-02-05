@@ -22,14 +22,20 @@ class Province:
         self.front = None
         self.wg_api = wgApi()
         self.region = region
+        if region == 'eu':
+            self.server = 'any'
+        else:
+            self.server = None
 
     async def show_data(self):
-        print(str(self.prime) + " " + str(self.map) + " " + str(self.map_2) + " " + str(self.channel) + " " + str(self.front))
+        print(str(self.prime) + " " + str(self.map) + " " + str(self.map_2) + " " + str(self.channel) + " " + str(
+            self.front))
         if is_none(self.prime) \
                 or (is_none(self.map) and is_none(self.map_2)) \
                 or (not is_none(self.map) and not is_none(self.map_2)) \
-                or is_none(self.channel)\
-                or is_none(self.front):
+                or is_none(self.channel) \
+                or is_none(self.front) \
+                or is_none(self.server):
             return
 
         if self.map is None:
@@ -41,22 +47,31 @@ class Province:
         filtered = list(filter(lambda x: x['arena_id'] == self.map, flattened))
 
         if self.region == 'ru':
-            print(str(len(filtered)))
-            print(str(inv_maps[self.map]))
             await self.channel.send(
                 "Найдено " + str(len(filtered)) + " провинций для карты - " + str(inv_maps[self.map]) +
-                ", прайма - " + str(self.prime) + ":00/15, фронта - " + region_map[self.region]['fronts_inv'][self.front])
+                ", прайма (МСК) - " + str(region_map[self.region]['prime'][int(self.prime)]) + ":00/15, фронта - " +
+                region_map[self.region]['fronts_inv'][self.front])
         else:
-            print(str(len(filtered)))
-            print(str(inv_maps[self.map]))
             await self.channel.send(
                 "Found " + str(len(filtered)) + " provinces for the map - " + str(inv_maps[self.map]) +
-                ", prime - " + str(self.prime) + ":00/15, Front - " + region_map[self.region]['fronts_inv'][self.front])
+                ", prime (CET) - " + str(region_map[self.region]['prime'][int(self.prime)]) + ":00/15, Front - " +
+                region_map[self.region]['fronts_inv'][self.front])
+        if self.server != "any":
+            filtered = list(filter(lambda x: x['server'] == self.server, filtered))
+            await self.channel.send(str(len(filtered)) + " провинций с выбранным сервером")
         for entry in filtered:
             embed, file = self.generate_embed(entry)
             await self.channel.send(file=file, embed=embed)
 
     def generate_embed(self, data):
+        prime_time = str(data['prime_time'])
+        if self.region == 'eu':
+            prime_time = str(int(prime_time.split(':')[0]) + 1) + ":" + prime_time.split(':')[1]
+        else:
+            timezone_hour = int(prime_time.split(':')[0]) + 3
+            if timezone_hour == 24:
+                timezone_hour = 00
+            prime_time = str(timezone_hour) + ":" + prime_time.split(':')[1]
         owner = data['owner_clan_id']
         if owner is None:
             owner = "This province has currently no owner."
@@ -66,7 +81,7 @@ class Province:
             url=region_map[self.region]['province_base_url'] + data['uri']
         )
         embed.add_field(
-            name=region_map[self.region]['prime_embed'], value=str(data['prime_time']) + " UTC", inline=True)
+            name=region_map[self.region]['prime_embed'], value=prime_time, inline=True)
         embed.add_field(
             name=region_map[self.region]['map_embed'], value=inv_maps[self.map], inline=True)
         embed.add_field(
@@ -74,9 +89,11 @@ class Province:
         embed.add_field(
             name=region_map[self.region]['min_bet_embed'], value=":coin: " + str(data['current_min_bet']), inline=True)
         embed.add_field(
-            name=region_map[self.region]['last_won_bet_embed'], value=":coin: " + str(data['last_won_bet']), inline=True)
+            name=region_map[self.region]['last_won_bet_embed'], value=":coin: " + str(data['last_won_bet']),
+            inline=True)
         embed.add_field(
-            name=region_map[self.region]['front_embed'], value=region_map[self.region]['fronts_inv'][self.front], inline=True)
+            name=region_map[self.region]['front_embed'], value=region_map[self.region]['fronts_inv'][self.front],
+            inline=True)
         embed.add_field(
             name=region_map[self.region]['owner_embed'], value=owner, inline=False)
         embed.add_field(
@@ -101,42 +118,60 @@ class Province:
             else:
                 self.map = select_map
 
+    async def select_server(self, interaction):
+        self.server = interaction.data['values'][0]
+        placeholder = "Выбранный сервер - " + self.server
+        self.disable_select("server", placeholder)
+        self.channel = interaction.channel
+        await interaction.response.edit_message(view=self.view)
+        await self.show_data()
+
     async def select_prime(self, interaction):
-        # print(interaction.data)
-        self.disable_select("prime")
         self.prime = interaction.data['values'][0]
+        placeholder = "Selected prime - " + str(region_map[self.region]['prime'][int(self.prime)]) + ":00/15"
+        self.disable_select("prime", placeholder)
         self.channel = interaction.channel
         await interaction.response.edit_message(view=self.view)
         await self.show_data()
 
     async def select_map(self, interaction):
-        self.disable_select("map_2")
-        self.disable_select("map")
         self.set_map(interaction.data['values'][0], 1)
+        placeholder = "Selected map - " + inv_maps[self.map]
+        self.disable_select("map_2", placeholder)
+        self.disable_select("map", placeholder)
         self.channel = interaction.channel
         await interaction.response.edit_message(view=self.view)
         await self.show_data()
 
     async def select_map_2(self, interaction):
-        self.disable_select("map_2")
-        self.disable_select("map")
         self.set_map(interaction.data['values'][0], 2)
+        placeholder = "Selected map - " + inv_maps[self.map_2]
+        self.disable_select("map_2", placeholder)
+        self.disable_select("map", placeholder)
         self.channel = interaction.channel
         await interaction.response.edit_message(view=self.view)
         await self.show_data()
 
     async def select_front(self, interaction):
-        self.disable_select("front")
         self.front = interaction.data['values'][0]
+        placeholder = "Selected Prime - " + region_map[self.region]['fronts_inv'][self.front]
+        self.disable_select("front", placeholder)
         self.channel = interaction.channel
         await interaction.response.edit_message(view=self.view)
         await self.show_data()
 
-    def disable_select(self, select):
+    def is_child_active(self, select):
+        children = self.view.children
+        for child in children:
+            if child.custom_id == select:
+                return child.disabled
+
+    def disable_select(self, select, val):
         children = self.view.children
         for child in children:
             if child.custom_id == select:
                 child.disabled = True
+                child.placeholder = val
 
     def set_view(self, view):
         self.view = view
@@ -197,7 +232,7 @@ maps_eu_2 = {
     'Siegfried line': '14_sigfried_line',
     'Steppes': '35_steppes',
     'Tundra': '63_tundra',
-    'Westfield': '23_westfield', #
+    'Westfield': '23_westfield',  #
 }
 
 maps_all = {
@@ -265,8 +300,27 @@ map_to_picture = {
     'Berlin': 'src/maps/105_germany.png'
 }
 
-prime_times_eu = [18, 19, 20, 21]
-prime_times_ru = [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 00]
+prime_times_eu = {
+    18: 19,
+    19: 20,
+    20: 21,
+    21: 22
+}
+prime_times_ru = {
+    11: 14,
+    12: 15,
+    13: 16,
+    14: 17,
+    15: 18,
+    16: 19,
+    17: 20,
+    18: 21,
+    20: 22,
+    21: 23
+}
+
+prime_times_eu_inv = {v: k for k, v in prime_times_eu.items()}
+prime_times_ru_inv = {v: k for k, v in prime_times_ru.items()}
 
 fronts_eu = {
     'Basic': "confrontation_eu_league1",
@@ -283,19 +337,28 @@ fronts_ru = {
 fronts_eu_inv = {v: k for k, v in fronts_eu.items()}
 fronts_ru_inv = {v: k for k, v in fronts_ru.items()}
 
+servers_ru = {
+    'Любой': 'any',
+    'RU2': 'RU2',
+    'RU4': 'RU4',
+    'RU6': 'RU6',
+    'RU8': 'RU8'
+}
+
 ru = {
     'province_base_url': "https://ru.wargaming.net/globalmap",
     'prime_placeholder': "Выберите Прайм Тайм",
     'map_placeholder': "Выберите карту",
     'front_placeholder': "Выберите фронт",
-    'prime_time_select': "Прайм - ",
+    'prime_time_select': "Прайм (МСК) - ",
     'map_select': "Карта - ",
     'front_select': "Фронт - ",
     'fronts': fronts_ru,
     'fronts_inv': fronts_ru_inv,
     'prime': prime_times_ru,
+    'prime_inv': prime_times_ru_inv,
     'maps': maps_ru,
-    'prime_embed': "Прайм Тайм",
+    'prime_embed': "Прайм Тайм (МСК)",
     'map_embed': "Карта",
     'server_embed': "Сервер",
     'min_bet_embed': "Минимальная ставка",
@@ -311,15 +374,16 @@ eu = {
     'prime_placeholder': "Select Prime Time",
     'map_placeholder': "Select Map",
     'front_placeholder': "Select Front Type",
-    'prime_time_select': "Prime - ",
+    'prime_time_select': "Prime (CET) - ",
     'map_select': "Map - ",
     'front_select': "Front - ",
     'fronts': fronts_eu,
     'fronts_inv': fronts_eu_inv,
     'prime': prime_times_eu,
+    'prime_inv': prime_times_eu_inv,
     'maps_1': maps_eu,
     'maps_2': maps_eu_2,
-    'prime_embed': "Prime time",
+    'prime_embed': "Prime time (CET)",
     'map_embed': "Map",
     'server_embed': "Server",
     'min_bet_embed': "Minimum bet",
@@ -359,6 +423,13 @@ def create_view(region):
         )
         select_map.callback = province.select_map
         view.add_item(select_map)
+        select_server = Select(
+            custom_id="server",
+            placeholder="Выберите сервер",
+            options=create_server_select_ru()
+        )
+        select_server.callback = province.select_server
+        view.add_item(select_server)
     else:
         select_map_one = Select(
             custom_id="map",
@@ -396,11 +467,11 @@ def create_select_options_front(region):
 def create_select_options_prime(region):
     selects = []
     prime_times = region_map[region]['prime']
-    for prime in prime_times:
+    for key in prime_times:
         selects.append(
             SelectOption(
-                label=region_map[region]['prime_time_select'] + str(prime),
-                value=str(prime)
+                label=region_map[region]['prime_time_select'] + str(prime_times[key]),
+                value=str(key)
             )
         )
     return selects
@@ -413,6 +484,18 @@ def create_select_options_map(region, maps):
             SelectOption(
                 label=region_map[region]['map_select'] + key,
                 value=maps[key]
+            )
+        )
+    return selects
+
+
+def create_server_select_ru():
+    selects = []
+    for key in servers_ru:
+        selects.append(
+            SelectOption(
+                label="Сервер - " + key,
+                value=servers_ru[key]
             )
         )
     return selects
