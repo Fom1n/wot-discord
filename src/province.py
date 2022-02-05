@@ -31,16 +31,24 @@ class Province:
                 or is_none(self.channel)\
                 or is_none(self.front):
             return
+
+        if self.map is None:
+            self.map = self.map_2
+
         provinces = self.wg_api.get_provinces(int(self.prime), self.front)
         data = list(map(lambda x: x['data'], provinces))
         flattened = list(itertools.chain(*data))
         filtered = list(filter(lambda x: x['arena_id'] == self.map, flattened))
 
         if self.region == 'ru':
+            print(str(len(filtered)))
+            print(str(inv_maps[self.map]))
             await self.channel.send(
                 "Найдено " + str(len(filtered)) + " провинций для карты - " + str(inv_maps[self.map]) +
                 ", прайма - " + str(self.prime) + ":00/15, фронта - " + region_map[self.region]['fronts_inv'][self.front])
         else:
+            print(str(len(filtered)))
+            print(str(inv_maps[self.map]))
             await self.channel.send(
                 "Found " + str(len(filtered)) + " provinces for the map - " + str(inv_maps[self.map]) +
                 ", prime - " + str(self.prime) + ":00/15, Front - " + region_map[self.region]['fronts_inv'][self.front])
@@ -102,6 +110,7 @@ class Province:
         await self.show_data()
 
     async def select_map(self, interaction):
+        self.disable_select("map_2")
         self.disable_select("map")
         self.set_map(interaction.data['values'][0], 1)
         self.channel = interaction.channel
@@ -110,6 +119,7 @@ class Province:
 
     async def select_map_2(self, interaction):
         self.disable_select("map_2")
+        self.disable_select("map")
         self.set_map(interaction.data['values'][0], 2)
         self.channel = interaction.channel
         await interaction.response.edit_message(view=self.view)
@@ -159,7 +169,6 @@ maps_ru = {
 }
 
 maps_eu = {
-    'None from this list': 'none',
     'Abbey': '19_monastery',
     'Berlin': '105_germany',
     'Karelia': '01_karelia',
@@ -170,7 +179,6 @@ maps_eu = {
 }
 
 maps_eu_2 = {
-    'None from this list': 'none',
     'Cliff': '18_cliff',
     'El hallouf': '29_el_hallouf',
     'Ensk': '06_ensk',
@@ -196,9 +204,9 @@ maps_eu_2 = {
 
 maps_all = {
     'Cliff': '18_cliff',
-    'El hallouf': '29_el_hallouf', #
+    'El hallouf': '29_el_hallouf',
     'Ensk': '06_ensk',
-    'Erlenberg': '13_erlenberg', #
+    'Erlenberg': '13_erlenberg',
     'Fisherman\'s Bay': '36_fishing_bay',
     'Highway': '45_north_america',
     'Himmelsdorf': '04_himmelsdorf',
@@ -212,15 +220,15 @@ maps_all = {
     'Redshire': '34_reshire',
     'Sand river': '28_desert',
     'Serene Coast': '47_canada_a',
-    'Siegfried line': '14_sigfried_line', #
+    'Siegfried line': '14_sigfried_line',
     'Steppes': '35_steppes',
     'Tundra': '63_tundra',
-    'Westfield': '23_westfield', #
+    'Westfield': '23_westfield',
     'Abbey': '19_monastery',
-    'Berlin': '105_germany',  #
+    'Berlin': '105_germany',
     'Karelia': '01_karelia',
     'Mountain pass': '37_caucasus',
-    'Overlord': '101_dday',  #
+    'Overlord': '101_dday',
     'Pilsen': '114_czech',
     'Ruinberg': '08_ruinberg',
     'Lost City': '95_lost_city',
