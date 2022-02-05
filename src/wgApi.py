@@ -61,14 +61,14 @@ class wgApi:
         }
         results = []
         result = requests.get(url=self.region_map[region]['provinces'], params=params).json()
-        print(result)
+        print(result['meta'])
         while result['meta']['count'] == 100:
             print(result)
             results.append(result)
             i = i + 1
             params['page_no'] = i
             result = requests.get(url=self.region_map[region]['provinces'], params=params).json()
-        print(result)
+        print(result['meta'])
         results.append(result)
         return results
 
