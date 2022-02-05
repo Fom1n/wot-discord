@@ -35,7 +35,7 @@ class Province:
         if self.map is None:
             self.map = self.map_2
 
-        provinces = self.wg_api.get_provinces(int(self.prime), self.front)
+        provinces = self.wg_api.get_provinces(int(self.prime), self.front, self.region)
         data = list(map(lambda x: x['data'], provinces))
         flattened = list(itertools.chain(*data))
         filtered = list(filter(lambda x: x['arena_id'] == self.map, flattened))
@@ -83,7 +83,7 @@ class Province:
             name=region_map[self.region]['attackers_embed'], value="No attackers", inline=False)
         embed.add_field(
             name=region_map[self.region]['competitors_embed'], value="No competitors", inline=False)
-        embed.set_image(
+        embed.set_thumbnail(
             url="attachment://map.png")
 
         file = discord.File(map_to_picture[inv_maps[self.map]], filename="map.png")
@@ -243,7 +243,7 @@ map_to_picture = {
     'El hallouf': 'src/maps/29_el_hallouf.png',
     'Overlord': 'src/maps/101_dday.png',
     'Karelia': 'src/maps/01_karelia.png',
-    'Malinovka': 'src/maps/02_malinovka.png',
+    'Malinovka': 'maps/02_malinovka.png',
     'Himmelsdorf': 'src/maps/04_himmelsdorf.png',
     'Prohorovka': 'src/maps/05_prohorovka.png',
     'Ensk': 'src/maps/06_ensk.png',
