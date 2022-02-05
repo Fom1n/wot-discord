@@ -18,7 +18,11 @@ class MessageMapper:
         # Check for region
         region_exists, region = self.check_region(msg)
         if msg.content.startswith('>>') and not region_exists:
-            await msg.channel.send("You need to select region first.", view=create_region_view(self.db_handler))
+            reg_view = None
+            if msg.author.guild_permissions.administrator:
+                reg_view = create_region_view(self.db_handler)
+            await msg.channel.send("You need to select region first.", view=reg_view)
+
             return
         if msg.content.startswith('>>provinces'):
             if region == 'ru':
