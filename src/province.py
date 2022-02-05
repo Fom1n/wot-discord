@@ -83,11 +83,15 @@ class Province:
 
     def set_map(self, select_map, map_nr):
         if select_map == 'none':
-            self.map_2 = None
+            if map_nr == 2:
+                self.map_2 = None
+            else:
+                self.map = None
         else:
-            self.map = select_map
             if map_nr == 2:
                 self.map_2 = select_map
+            else:
+                self.map = select_map
 
     async def select_prime(self, interaction):
         # print(interaction.data)
