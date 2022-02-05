@@ -243,7 +243,7 @@ map_to_picture = {
     'El hallouf': 'src/maps/29_el_hallouf.png',
     'Overlord': 'src/maps/101_dday.png',
     'Karelia': 'src/maps/01_karelia.png',
-    'Malinovka': 'maps/02_malinovka.png',
+    'Malinovka': 'src/maps/02_malinovka.png',
     'Himmelsdorf': 'src/maps/04_himmelsdorf.png',
     'Prohorovka': 'src/maps/05_prohorovka.png',
     'Ensk': 'src/maps/06_ensk.png',
