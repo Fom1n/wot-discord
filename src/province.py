@@ -63,7 +63,7 @@ class Province:
         embed = Embed(
             color=discord.Color.gold(),
             title=data['province_name'],
-            url=province_base_url + data['uri']
+            url=region_map[self.region]['province_base_url'] + data['uri']
         )
         embed.add_field(
             name=region_map[self.region]['prime_embed'], value=str(data['prime_time']) + " UTC", inline=True)
@@ -141,8 +141,6 @@ class Province:
     def set_view(self, view):
         self.view = view
 
-
-province_base_url = "https://eu.wargaming.net/globalmap"
 
 maps_ru = {
     'Karelia': '01_karelia',
@@ -286,6 +284,7 @@ fronts_eu_inv = {v: k for k, v in fronts_eu.items()}
 fronts_ru_inv = {v: k for k, v in fronts_ru.items()}
 
 ru = {
+    'province_base_url': "https://ru.wargaming.net/globalmap",
     'prime_placeholder': "Выберите Прайм Тайм",
     'map_placeholder': "Выберите карту",
     'front_placeholder': "Выберите фронт",
@@ -308,6 +307,7 @@ ru = {
 }
 
 eu = {
+    'province_base_url': "https://eu.wargaming.net/globalmap",
     'prime_placeholder': "Select Prime Time",
     'map_placeholder': "Select Map",
     'front_placeholder': "Select Front Type",
