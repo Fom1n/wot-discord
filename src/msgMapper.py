@@ -1,4 +1,5 @@
 import discord
+from discord import Embed
 
 from src.province import create_view
 from src.region import create_region_view
@@ -11,6 +12,11 @@ class MessageMapper:
         # All messages
         if msg.author.id == self.client.user.id:
             return
+        embed = Embed(
+            title="test"
+        )
+        embed.add_field(name="Test name", value="Test hyperlink [[tag]](https://stackoverflow.com) and another [one](https://www.youtube.com)")
+        # await msg.channel.send("Trying embed", embed=embed)
 
         if msg.content.startswith(">>region") and msg.author.guild_permissions.administrator:
             await msg.channel.send("Please select your region.", view=create_region_view(self.db_handler))

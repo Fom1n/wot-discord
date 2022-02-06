@@ -1,4 +1,5 @@
 import itertools
+import math
 
 import discord
 from discord import SelectOption, InteractionResponded, Embed
@@ -40,26 +41,63 @@ class Province:
 
         if self.map is None:
             self.map = self.map_2
-
-        provinces = self.wg_api.get_provinces(int(self.prime), self.front, self.region)
+        try:
+            provinces = self.wg_api.get_provinces(int(self.prime), self.front, self.region, self.map)
+        except KeyError as e:
+            await self.channel.send("WG API ERROR (retry)")
         data = list(map(lambda x: x['data'], provinces))
         flattened = list(itertools.chain(*data))
-        filtered = list(filter(lambda x: x['arena_id'] == self.map, flattened))
-
+        # filtered = list(filter(lambda x: x['arena_id'] == self.map, flattened))
+        print(flattened)
         if self.region == 'ru':
             await self.channel.send(
-                "Найдено " + str(len(filtered)) + " провинций для карты - " + str(inv_maps[self.map]) +
+                "Найдено " + str(len(flattened)) + " провинций для карты - " + str(inv_maps[self.map]) +
                 ", прайма (МСК) - " + str(region_map[self.region]['prime'][int(self.prime)]) + ":00/15, фронта - " +
                 region_map[self.region]['fronts_inv'][self.front])
         else:
             await self.channel.send(
-                "Found " + str(len(filtered)) + " provinces for the map - " + str(inv_maps[self.map]) +
+                "Found " + str(len(flattened)) + " provinces for the map - " + str(inv_maps[self.map]) +
                 ", prime (CET) - " + str(region_map[self.region]['prime'][int(self.prime)]) + ":00/15, Front - " +
                 region_map[self.region]['fronts_inv'][self.front])
         if self.server != "any":
-            filtered = list(filter(lambda x: x['server'] == self.server, filtered))
-            await self.channel.send(str(len(filtered)) + " провинций с выбранным сервером")
-        for entry in filtered:
+            flattened = list(filter(lambda x: x['server'] == self.server, flattened))
+            await self.channel.send(str(len(flattened)) + " провинций с выбранным сервером")
+        for entry in flattened:
+            # entry['competitors'] = [
+            #     500066861,
+            #     500000338,
+            #     500197237,
+            #     500072861,
+            #     500071584,
+            #     500161727,
+            #     500205311,
+            #     500010805,
+            #     500161393,
+            #     500008017,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861,
+            #     500066861
+            # ]
+            # entry['owner_clan_id'] = 500205311
             embed, file = self.generate_embed(entry)
             await self.channel.send(file=file, embed=embed)
 
@@ -72,9 +110,6 @@ class Province:
             if timezone_hour == 24:
                 timezone_hour = 00
             prime_time = str(timezone_hour) + ":" + prime_time.split(':')[1]
-        owner = data['owner_clan_id']
-        if owner is None:
-            owner = "This province has currently no owner."
         embed = Embed(
             color=discord.Color.gold(),
             title=data['province_name'],
@@ -94,17 +129,90 @@ class Province:
         embed.add_field(
             name=region_map[self.region]['front_embed'], value=region_map[self.region]['fronts_inv'][self.front],
             inline=True)
-        embed.add_field(
-            name=region_map[self.region]['owner_embed'], value=owner, inline=False)
-        embed.add_field(
-            name=region_map[self.region]['attackers_embed'], value="No attackers", inline=False)
-        embed.add_field(
-            name=region_map[self.region]['competitors_embed'], value="No competitors", inline=False)
+        # embed.add_field(
+        #     name=region_map[self.region]['owner_embed'], value=owner, inline=False)
+        owner = data['owner_clan_id']
+        competitors = data['competitors']
+        attackers = data['attackers']
+        province_id = data['province_id']
+        self.handle_owner(owner, embed)
+        self.handle_clans(embed, attackers, 'attackers_embed')
+        self.handle_clans(embed, competitors, 'competitors_embed')
+        self.handle_bonuses(embed, province_id)
+
         embed.set_thumbnail(
             url="attachment://map.png")
 
         file = discord.File(map_to_picture[inv_maps[self.map]], filename="map.png")
         return embed, file
+
+    def handle_owner(self, clan_id, embed):
+        if is_none(clan_id):
+            embed.add_field(
+                name=region_map[self.region]['owner_embed'],
+                value="---------"
+            )
+            return
+        string = ""
+        clan_info_gm = self.wg_api.get_clan_global_map_info(str(clan_id), self.region)
+        clan_info_general = self.wg_api.get_clan_info(clan_id, self.region)
+        global_map_elo = clan_info_gm['gm_elo_rating_10']
+        clan_tag = clan_info_general['clanview']['clan']['tag']
+        string = string + "[[" + clan_tag + "]](" + region_map[self.region]['clan_base_url'] + str(clan_id) + \
+                 ") - Elo = " + str(global_map_elo) + "\n"
+        embed.add_field(
+            name=region_map[self.region]['owner_embed'],
+            value=string
+        )
+
+    def handle_bonuses(self, embed, province_id):
+        try:
+            province_info = self.wg_api.get_province_info(province_id, self.region)['province']
+        except KeyError:
+            # await self.channel.send("WG PROVINCE ERROR (RETRY)")
+            return
+        bonuses = province_info['bonuses']
+        string = ""
+        for bonus in bonuses:
+            bonus_type = bonus['bonus_type']
+            bonus_value = str(bonus['bonus_value'])
+            if str(bonus_type).startswith("FREE"):
+                string = string + region_map[self.region]['bonus'][bonus_type] + " - " + bonus_value + "\n"
+            else:
+                string = string + region_map[self.region]['bonus'][bonus_type] + " - " + bonus_value + "%\n"
+        embed.add_field(name=region_map[self.region]['bonus_embed'], value=string)
+
+    def handle_clans(self, embed, clans, clan_type):
+        if len(clans) == 0:
+            embed.add_field(
+                name=region_map[self.region][clan_type],
+                value="---------", inline=False)
+        elif len(clans) <= 10:
+            embed.add_field(
+                name=region_map[self.region][clan_type],
+                value=self.generate_clans_string(clans), inline=False)
+        elif len(clans) > 10:
+            three = math.floor(len(clans)/3)
+            embed.add_field(
+                name=region_map[self.region][clan_type],
+                value=self.generate_clans_string(clans[0:three]), inline=False)
+            embed.add_field(
+                name=region_map[self.region][clan_type],
+                value=self.generate_clans_string(clans[three+1:three*2]), inline=False)
+            embed.add_field(
+                name=region_map[self.region][clan_type],
+                value=self.generate_clans_string(clans[three*2:len(clans)]), inline=False)
+
+    def generate_clans_string(self, clans):
+        string = ""
+        for clan in clans:
+            clan_info_gm = self.wg_api.get_clan_global_map_info(str(clan), self.region)
+            clan_info_general = self.wg_api.get_clan_info(clan, self.region)
+            global_map_elo = clan_info_gm['gm_elo_rating_10']
+            clan_tag = clan_info_general['clanview']['clan']['tag']
+            string = string + "[[" + clan_tag + "]](" + region_map[self.region]['clan_base_url'] + str(clan) + \
+                     ") - Elo = " + str(global_map_elo) + "\n"
+        return string
 
     def set_map(self, select_map, map_nr):
         if select_map == 'none':
@@ -270,7 +378,7 @@ maps_all = {
 inv_maps = {v: k for k, v in maps_all.items()}
 
 map_to_picture = {
-    'Westfield': 'src/maps/23_westfeld.png',
+    'Westfield': 'src/src/maps/23_westfeld.png',
     'Siegfried line': 'src/maps/14_siegfried_line.png',
     'Erlenberg': 'src/maps/13_erlenberg.png',
     'El hallouf': 'src/maps/29_el_hallouf.png',
@@ -345,8 +453,25 @@ servers_ru = {
     'RU8': 'RU8'
 }
 
+bonus_map_ru = {
+    'CFP_BATTLES': "Клановые очки славы в боях",
+    'CFP_PROVINCE': "Клановые очки славы с провинций",
+    'CFP_PRIZE': "Бонус за количество захваченных провинций",
+    'FREE_APPLIC_L2': "Заявки на высадку на Продвинутый Фронт, в день",
+    'FREE_APPLIC_L3': "Заявки на высадку на Элитный Фронт, в день"
+}
+
+bonus_map_eu = {
+    'CFP_BATTLES': "Clan Fame Points in battles",
+    'CFP_PROVINCE': "Clan Fame Pooints from provinces",
+    'CFP_PRIZE': "Bonus for the number of captured provinces",
+    'FREE_APPLIC_L2': "Applications for landing in the Advanced Front, per day",
+    'FREE_APPLIC_L3': "Applications for landing in the Elite Front, per day"
+}
+
 ru = {
     'province_base_url': "https://ru.wargaming.net/globalmap",
+    'clan_base_url': "https://ru.wargaming.net/clans/wot",
     'prime_placeholder': "Выберите Прайм Тайм",
     'map_placeholder': "Выберите карту",
     'front_placeholder': "Выберите фронт",
@@ -366,11 +491,14 @@ ru = {
     'front_embed': "Фронт",
     'owner_embed': "Владелец",
     'attackers_embed': "Атакующие кланы",
-    'competitors_embed': "Турнирные кланы"
+    'competitors_embed': "Турнирные кланы",
+    'bonus': bonus_map_ru,
+    'bonus_embed': "Бонусы провинции"
 }
 
 eu = {
     'province_base_url': "https://eu.wargaming.net/globalmap",
+    'clan_base_url': "https://eu.wargaming.net/clans/wot/",
     'prime_placeholder': "Select Prime Time",
     'map_placeholder': "Select Map",
     'front_placeholder': "Select Front Type",
@@ -391,7 +519,9 @@ eu = {
     'front_embed': "Front",
     'owner_embed': "Province owner",
     'attackers_embed': "Attackers clans",
-    'competitors_embed': "Competitors clans"
+    'competitors_embed': "Competitors clans",
+    'bonus': bonus_map_eu,
+    'bonus_embed': "Province bonuses"
 }
 
 region_map = {
