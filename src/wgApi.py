@@ -59,21 +59,17 @@ class wgApi:
         }
         results = []
         result = requests.get(url=self.region_map[region]['provinces'], params=params).json()
-        print(result['meta'])
         while result['meta']['count'] == 100:
             print(result)
             results.append(result)
             i = i + 1
             params['page_no'] = i
             result = requests.get(url=self.region_map[region]['provinces'], params=params).json()
-        print(result['meta'])
         results.append(result)
         return results
 
     def get_clan_global_map_info(self, clan_id, region):
-        print(self.region_map[region]['clan_info_base'] + str(clan_id) + "/api/globalmap/")
         result = requests.get(url=self.region_map[region]['clan_info_base'] + str(clan_id) + "/api/globalmap/")
-        print(result.json())
         result = result.json()['globalmap']
         return result
 
@@ -83,7 +79,6 @@ class wgApi:
         }
         result = requests.get(url=self.region_map[region]['province_info_base'], params=params)
         return result.json()
-
 
     def __init__(self):
         self.ru = {
