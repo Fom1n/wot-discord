@@ -386,7 +386,7 @@ map_to_picture = {
     'Karelia': 'src/maps/01_karelia.png',
     'Malinovka': 'src/maps/02_malinovka.png',
     'Himmelsdorf': 'src/maps/04_himmelsdorf.png',
-    'Prohorovka': 'src/maps/05_prohorovka.png',
+    'Prokhorovka': 'src/maps/05_prohorovka.png',
     'Ensk': 'src/maps/06_ensk.png',
     'Lakeville': 'src/maps/07_lakeville.png',
     'Ruinberg': 'src/maps/08_ruinberg.png',
