@@ -189,19 +189,19 @@ class Province:
                 value="---------", inline=False)
         elif len(clans) <= 10:
             embed.add_field(
-                name=region_map[self.region][clan_type],
+                name=region_map[self.region][clan_type] + ", " + region_map[self.region]['length'] + str(len(clans)),
                 value=self.generate_clans_string(clans), inline=False)
         elif len(clans) > 10:
             three = math.floor(len(clans)/3)
             embed.add_field(
-                name=region_map[self.region][clan_type],
-                value=self.generate_clans_string(clans[0:three]), inline=False)
+                name=region_map[self.region][clan_type] + ", " + region_map[self.region]['length'] + str(len(clans)),
+                value=self.generate_clans_string(clans[:three]), inline=False)
             embed.add_field(
-                name=region_map[self.region][clan_type],
+                name=region_map[self.region][clan_type] + ", " + region_map[self.region]['length'] + str(len(clans)),
                 value=self.generate_clans_string(clans[three+1:three*2]), inline=False)
             embed.add_field(
-                name=region_map[self.region][clan_type],
-                value=self.generate_clans_string(clans[three*2:len(clans)]), inline=False)
+                name=region_map[self.region][clan_type] + ", " + region_map[self.region]['length'] + str(len(clans)),
+                value=self.generate_clans_string(clans[three*2:]), inline=False)
 
     def generate_clans_string(self, clans):
         string = ""
@@ -378,7 +378,7 @@ maps_all = {
 inv_maps = {v: k for k, v in maps_all.items()}
 
 map_to_picture = {
-    'Westfield': 'src/src/maps/23_westfeld.png',
+    'Westfield': 'src/maps/23_westfeld.png',
     'Siegfried line': 'src/maps/14_siegfried_line.png',
     'Erlenberg': 'src/maps/13_erlenberg.png',
     'El hallouf': 'src/maps/29_el_hallouf.png',
@@ -393,7 +393,7 @@ map_to_picture = {
     'Hills': 'src/maps/10_hills.png',
     'Murovanka': 'src/maps/11_murovanka.png',
     'Cliff': 'src/maps/18_cliff.png',
-    'Monastery': 'src/maps/19_monastery.png',
+    'Abbey': 'src/maps/19_monastery.png',
     'Sand river': 'src/maps/28_desert.png',
     'Redshire': 'src/maps/34_reshire.png',
     'Steppes': 'src/maps/35_steppes.png',
@@ -493,7 +493,8 @@ ru = {
     'attackers_embed': "Атакующие кланы",
     'competitors_embed': "Турнирные кланы",
     'bonus': bonus_map_ru,
-    'bonus_embed': "Бонусы провинции"
+    'bonus_embed': "Бонусы провинции",
+    'length': "Количество кланов - "
 }
 
 eu = {
@@ -521,7 +522,8 @@ eu = {
     'attackers_embed': "Attackers clans",
     'competitors_embed': "Competitors clans",
     'bonus': bonus_map_eu,
-    'bonus_embed': "Province bonuses"
+    'bonus_embed': "Province bonuses",
+    'length': "Number of clans - "
 }
 
 region_map = {
