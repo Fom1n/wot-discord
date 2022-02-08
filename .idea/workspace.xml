@@ -20,15 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4578d5f-5539-4422-9edf-e474f19610e5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/db/main.db" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/main.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/maps/01_karelia.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/maps/01_karelia.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/maps/04_himmelsdorf.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/maps/04_himmelsdorf.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/maps/105_germany.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/maps/105_germany.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/msgMapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/msgMapper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/province.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/province.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/scheduler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/wgApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/wgApi.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
