@@ -37,6 +37,7 @@ class MessageMapper:
             return
         if msg.content.startswith('>>bat'):
             await self.display_battles_handler(msg)
+            return
         # Admin messages
         if msg.content.startswith('>>') and not msg.author.guild_permissions.administrator:
             await msg.channel.send('I\'m sorry boy, but you can\'t do that here. Go ask pappa to do it.')
