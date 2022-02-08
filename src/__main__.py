@@ -34,7 +34,7 @@ async def on_ready():
     autoupdate.start()
 
 
-@tasks.loop(minutes=15)
+@tasks.loop(hours=1)
 async def autoupdate():
     # await scheduler.schedule_sh_update()
     await scheduler.schedule_pfp_update()

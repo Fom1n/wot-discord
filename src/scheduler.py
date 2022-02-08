@@ -116,6 +116,8 @@ class Scheduler:
             if channel_type != 'PFP':
                 continue
             channel = discord.utils.get(self.client.get_all_channels(), id=channel_id)
+            if channel is None:
+                continue
             try:
                 ratings = self.wg_api.get_player_fame_details(clan, region)['accounts_ratings']
             except Exception as e:
