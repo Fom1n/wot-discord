@@ -340,6 +340,7 @@ maps_eu_2 = {
     'Steppes': '35_steppes',
     'Tundra': '63_tundra',
     'Westfield': '23_westfield',  #
+    'Paris': '112_eiffel_tower_ctf'
 }
 
 maps_all = {
@@ -377,6 +378,7 @@ maps_all = {
     'Pilsen': '114_czech',
     'Ruinberg': '08_ruinberg',
     'Lost City': '95_lost_city',
+    'Paris': '112_eiffel_tower_ctf'
 }
 
 inv_maps = {v: k for k, v in maps_all.items()}
@@ -399,7 +401,7 @@ map_to_picture = {
     'Ensk': 'src/maps/06_ensk.png',
     'Энск': 'src/maps/06_ensk.png',
     'Lakeville': 'src/maps/07_lakeville.png',
-    'Лассвиль': 'src/maps/07_lakeville.png',
+    'Ласвилль': 'src/maps/07_lakeville.png',
     'Ruinberg': 'src/maps/08_ruinberg.png',
     'Руинберг': 'src/maps/08_ruinberg.png',
     'Mines': 'src/maps/10_hills.png',
@@ -427,7 +429,8 @@ map_to_picture = {
     'Lost City': 'src/maps/95_lost_city.png',
     'Затерянный город': 'src/maps/95_lost_city.png',
     'Pilsen': 'src/maps/114_czech.png',
-    'Berlin': 'src/maps/105_germany.png'
+    'Berlin': 'src/maps/105_germany.png',
+    'Paris': 'src/maps/112_eiffel_tower_ctf.png'
 }
 
 prime_times_eu = {

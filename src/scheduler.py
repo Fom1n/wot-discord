@@ -200,47 +200,12 @@ class Scheduler:
         self.client = client
         self.clan_utils = clan_utils
 
-
-fronts_eu = {
-    'Basic': "confrontation_eu_league1",
-    'Advanced': "confrontation_eu_league2",
-    'Elite': "confrontation_eu_league3"
-}
-
-fronts_ru = {
-    'Базовый': "confrontation_ru_league1",
-    'Продвинутый': "confrontation_ru_league2",
-    'Элитный': "confrontation_ru_league3"
-}
-
-fronts_eu_inv = {v: k for k, v in fronts_eu.items()}
-fronts_ru_inv = {v: k for k, v in fronts_ru.items()}
-
 ru = {
     'tank': "Танк: ",
     'fame': "Очки славы: ",
     'place': "Место: ",
     'style': "3д стиль: ",
     'name': "Ник: ",
-    'province_base_url': "https://ru.wargaming.net/globalmap/#province/",
-    'clan_base_url': "https://ru.wargaming.net/clans/wot",
-    'planned_embed': "Запланированный: ",
-    'prime_embed': "Прайм Тайм (МСК)",
-    'map_embed': "Карта",
-    'server_embed': "Сервер",
-    'min_bet_embed': "Минимальная ставка",
-    'last_won_bet_embed': "Последняя выигрышная ставка",
-    'front_embed': "Фронт",
-    'owner_embed': "Владелец",
-    'attackers_embed': "Атакующие кланы",
-    'competitors_embed': "Турнирные кланы",
-    'bonus_embed': "Бонусы провинции",
-    'length': "Количество кланов - ",
-    'attacker_embed': "Мы атакуем?",
-    'respawn_embed': "Респавн",
-    'enemy_embed': "Противник",
-    'fronts': fronts_ru,
-    'fronts_inv': fronts_ru_inv,
 }
 
 eu = {
@@ -249,25 +214,6 @@ eu = {
     'place': "Place: ",
     'style': "3d style: ",
     'name': "Player name: ",
-    'province_base_url': "https://eu.wargaming.net/globalmap/#province/",
-    'clan_base_url': "https://eu.wargaming.net/clans/wot/",
-    'planned_embed': "Planned: ",
-    'prime_embed': "Prime time (CET)",
-    'map_embed': "Map",
-    'server_embed': "Server",
-    'min_bet_embed': "Minimum bet",
-    'last_won_bet_embed': "Last won bet",
-    'front_embed': "Front",
-    'owner_embed': "Province owner",
-    'attackers_embed': "Attackers clans",
-    'competitors_embed': "Competitors clans",
-    'bonus_embed': "Province bonuses",
-    'length': "Number of clans - ",
-    'attacker_embed': "We attac?",
-    'respawn_embed': "Respawn",
-    'enemy_embed': "Enemy",
-    'fronts': fronts_eu,
-    'fronts_inv': fronts_eu_inv,
 }
 
 region_map = {

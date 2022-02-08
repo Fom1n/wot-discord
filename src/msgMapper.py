@@ -1,6 +1,7 @@
 import discord
 from discord import Embed
 
+from src import battles
 from src.province import create_view
 from src.region import create_region_view
 
@@ -8,6 +9,7 @@ from src.region import create_region_view
 class MessageMapper:
 
     async def mapMessage(self, msg):
+        print(msg)
 
         # All messages
         if msg.author.id == self.client.user.id:
@@ -23,19 +25,24 @@ class MessageMapper:
             return
         # Check for region
         region_exists, region = self.check_region(msg)
+        print(1)
         if msg.content.startswith('>>') and not region_exists:
             reg_view = None
             if msg.author.guild_permissions.administrator:
                 reg_view = create_region_view(self.db_handler)
             await msg.channel.send("You need to select region first.", view=reg_view)
             return
-
+        print(2)
         if msg.content.startswith('>>provinces'):
             if region == 'ru':
                 await msg.channel.send(ru['province'], view=create_view(region))
             else:
                 await msg.channel.send(eu['province'], view=create_view(region))
             return
+        print(3)
+        if msg.content.startswith('>>bat'):
+            print(4)
+            await self.display_battles_handler(msg)
         # Admin messages
         if msg.content.startswith('>>') and not msg.author.guild_permissions.administrator:
             await msg.channel.send('I\'m sorry boy, but you can\'t do that here. Go ask pappa to do it.')
@@ -58,6 +65,16 @@ class MessageMapper:
         channel_id = msg.channel.id
         self.db_handler.delete_channel(channel_id, guild_id)
 
+    async def display_battles_handler(self, msg):
+        arr = msg.content.split(" ")
+        if len(arr) < 3 | len(arr) > 3:
+            await msg.channel.send("WRONG MSG. Example - >>bat MERCY ru")
+            return
+        clan = arr[1]
+        region = arr[2]
+        await self.set_clan(clan, region, msg.channel)
+        await battles.bat_display(self.db_handler, self.wg_api, msg.channel, clan, region)
+
     async def setChannelHandler(self, msg):
         arr = msg.content.split(" ")
         if len(arr) < 4 | len(arr) > 4:
@@ -76,12 +93,12 @@ class MessageMapper:
                 await msg.channel.send(
                     "I've successfully saved the channel where you want me to spam " + arr[1] + " info "
                                                                                                 "to.")
-        elif channel_type == "BAT":
-            await self.set_clan(clan, region, msg.channel)
-            inserted = self.db_handler.updateChannel(guild_id, channel_id, channel_type, clan, region)
-            if inserted:
-                await msg.channel.send(
-                    "I've successfully saved the channel where you want me to spam battles info to.")
+        # elif channel_type == "BAT":
+        #     await self.set_clan(clan, region, msg.channel)
+        #     inserted = self.db_handler.updateChannel(guild_id, channel_id, channel_type, clan, region)
+        #     if inserted:
+        #         await msg.channel.send(
+        #             "I've successfully saved the channel where you want me to spam battles info to.")
         else:
             await msg.channel.send("None")
 
