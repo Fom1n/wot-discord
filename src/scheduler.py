@@ -34,7 +34,6 @@ class Scheduler:
                 file = files[i]
                 await channel.send(embed=embed, file=file)
 
-
     def generate_embeds_planned(self, planned, region):
         embeds = []
         files = []
@@ -63,9 +62,6 @@ class Scheduler:
             file = discord.File(map_to_picture[battle['arena_name']], filename="map.png")
             files.append(file)
         return embeds, files
-
-
-
 
     def handle_single_clan(self, clan_id, embed, region, clan_type):
         if is_none(clan_id):
@@ -148,6 +144,11 @@ class Scheduler:
                 message += region_map[region]['tank'] + tank + ", " + region_map[region]['style'] + styles + ", " + \
                            region_map[region]['fame'] + str(fame_points)
                 fame_diff = 5 - len(str(fame_points))
+                place_diff = 5 - len(str(player_place))
+                message += ' '
+                for k in range(place_diff):
+                    message += ' ' + region_map[region]['place'] + str(player_place)
+                message += " "
                 for j in range(fame_diff):
                     message += ' '
                 message += " " + region_map[region]['name'] + name + "\n"
@@ -197,6 +198,7 @@ class Scheduler:
         self.wg_api = wg_api
         self.client = client
         self.clan_utils = clan_utils
+
 
 fronts_eu = {
     'Basic': "confrontation_eu_league1",
