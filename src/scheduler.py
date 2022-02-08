@@ -144,13 +144,14 @@ class Scheduler:
                 message += region_map[region]['tank'] + tank + ", " + region_map[region]['style'] + styles + ", " + \
                            region_map[region]['fame'] + str(fame_points)
                 fame_diff = 5 - len(str(fame_points))
-                place_diff = 5 - len(str(player_place))
+                place_diff = 6 - len(str(player_place))
                 message += ' '
                 for j in range(fame_diff):
                     message += ' '
                 message += " "
+                message += region_map[region]['place'] + str(player_place)
                 for k in range(place_diff):
-                    message += ' ' + region_map[region]['place'] + str(player_place)
+                    message += ' '
                 message += " " + region_map[region]['name'] + name + "\n"
                 if i % 10 == 0 and i != 0:
                     message += "```"
