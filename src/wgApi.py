@@ -86,6 +86,14 @@ class wgApi:
         result = requests.get(url=url)
         return result.json()
 
+    def get_tournament_info(self, province_id, region):
+        params = {
+            'alias': province_id
+        }
+        url = self.region_map[region]['tournament_info']
+        result = requests.get(url=url, params=params)
+        return result.json()
+
     def __init__(self):
         self.ru = {
             'url_clans': "https://api.worldoftanks.ru/wgn/clans/list/",
@@ -97,7 +105,8 @@ class wgApi:
             'clan_info_base': "https://ru.wargaming.net/clans/wot/",
             'province_info_base': "https://ru.wargaming.net/globalmap/game_api/province_info/",
             'fame_header': fame_ru,
-            'battles_base': "https://ru.wargaming.net/globalmap/game_api/clan/"
+            'battles_base': "https://ru.wargaming.net/globalmap/game_api/clan/",
+            'tournament_info': "https://ru.wargaming.net/globalmap/game_api/tournament_info"
         }
         self.eu = {
             'url_clans': "https://api.worldoftanks.eu/wgn/clans/list/",
@@ -109,7 +118,8 @@ class wgApi:
             'clan_info_base': "https://eu.wargaming.net/clans/wot/",
             'province_info_base': "https://eu.wargaming.net/globalmap/game_api/province_info/",
             'fame_header': fame_eu,
-            'battles_base': "https://eu.wargaming.net/globalmap/game_api/clan/"
+            'battles_base': "https://eu.wargaming.net/globalmap/game_api/clan/",
+            'tournament_info': "https://eu.wargaming.net/globalmap/game_api/tournament_info"
         }
         self.region_map = {
             'ru': self.ru,
