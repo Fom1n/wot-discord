@@ -9,8 +9,6 @@ from src.region import create_region_view
 class MessageMapper:
 
     async def mapMessage(self, msg):
-        print(msg)
-
         # All messages
         if msg.author.id == self.client.user.id:
             return
@@ -25,23 +23,19 @@ class MessageMapper:
             return
         # Check for region
         region_exists, region = self.check_region(msg)
-        print(1)
         if msg.content.startswith('>>') and not region_exists:
             reg_view = None
             if msg.author.guild_permissions.administrator:
                 reg_view = create_region_view(self.db_handler)
             await msg.channel.send("You need to select region first.", view=reg_view)
             return
-        print(2)
         if msg.content.startswith('>>provinces'):
             if region == 'ru':
                 await msg.channel.send(ru['province'], view=create_view(region))
             else:
                 await msg.channel.send(eu['province'], view=create_view(region))
             return
-        print(3)
         if msg.content.startswith('>>bat'):
-            print(4)
             await self.display_battles_handler(msg)
         # Admin messages
         if msg.content.startswith('>>') and not msg.author.guild_permissions.administrator:
