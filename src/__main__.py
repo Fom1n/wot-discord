@@ -37,8 +37,8 @@ async def on_ready():
 @tasks.loop(minutes=15)
 async def autoupdate():
     # await scheduler.schedule_sh_update()
-    # await scheduler.schedule_pfp_update()
-    await scheduler.schedule_bat_update()
+    await scheduler.schedule_pfp_update()
+    # await scheduler.schedule_bat_update()
 
 @autoupdate.before_loop
 async def before():
