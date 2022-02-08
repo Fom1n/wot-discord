@@ -28,21 +28,22 @@ class MessageMapper:
             if msg.author.guild_permissions.administrator:
                 reg_view = create_region_view(self.db_handler)
             await msg.channel.send("You need to select region first.", view=reg_view)
-
             return
+
         if msg.content.startswith('>>provinces'):
             if region == 'ru':
                 await msg.channel.send(ru['province'], view=create_view(region))
             else:
                 await msg.channel.send(eu['province'], view=create_view(region))
             return
-
         # Admin messages
         if msg.content.startswith('>>') and not msg.author.guild_permissions.administrator:
             await msg.channel.send('I\'m sorry boy, but you can\'t do that here. Go ask pappa to do it.')
             return
-        if msg.content.startswith('>>setclan'):
-            await self.setClanHandler(msg, region)
+        if msg.content.startswith('>>deletechannel'):
+            self.delete_channel_handler(msg)
+            await msg.channel.send(":white_check_mark:")
+
         if msg.content.startswith('>>setchannel'):
             await self.setChannelHandler(msg)
 
@@ -52,45 +53,54 @@ class MessageMapper:
             return False, region
         return True, region
 
+    def delete_channel_handler(self, msg):
+        guild_id = msg.author.guild.id
+        channel_id = msg.channel.id
+        self.db_handler.delete_channel(channel_id, guild_id)
+
     async def setChannelHandler(self, msg):
         arr = msg.content.split(" ")
-        if len(arr) < 2 | len(arr) > 2:
-            await msg.channel.send("You need to specify type of channel. Currently supported - **SH**, **PFP***")
+        if len(arr) < 4 | len(arr) > 4:
+            await msg.channel.send("WRONG MSG. Example - >>setchannel PFP MERCY ru")
             return
         channel_id = msg.channel.id
         guild_id = msg.author.guild.id
         channel_type = arr[1]
-        if channel_type == "SH" or channel_type == "PFP":
-            inserted = self.db_handler.updateChannel(guild_id, channel_id, arr[1])
+        clan = arr[2]
+        region = arr[3]
+        if region != 'ru' and region != 'eu':
+            await msg.channel.send("Region must be either ru or eu (lower case)")
+        if channel_type == "PFP":
+            inserted = self.db_handler.updateChannel(guild_id, channel_id, channel_type, clan, region)
             if inserted:
                 await msg.channel.send(
                     "I've successfully saved the channel where you want me to spam " + arr[1] + " info "
                                                                                                 "to.")
+        elif channel_type == "BAT":
+            await self.set_clan(clan, region, msg.channel)
+            inserted = self.db_handler.updateChannel(guild_id, channel_id, channel_type, clan, region)
+            if inserted:
+                await msg.channel.send(
+                    "I've successfully saved the channel where you want me to spam battles info to.")
         else:
-            await msg.channel.send("English, do you speak it? I don't know what you want me to do.")
+            await msg.channel.send("None")
 
-    async def setClanHandler(self, msg, region):
-        arr = msg.content.split(" ")
-        if len(arr) < 2 | len(arr) > 2:
-            await msg.channel.send("You need to specify clan after space, like this - '$setclan FAME' ")
+    async def set_clan(self, clan_tag, region, channel):
+        # print(clan_data)
+
+        exists = self.db_handler.clan_name_and_id_exists(clan_tag, region)
+        if exists:
             return
         else:
-            clan_data = self.wg_api.get_clan_id(arr[1], region)
-            # print(clan_data)
+            clan_data = self.wg_api.get_clan_id(clan_tag, region)
             if clan_data['status'] != "ok":
-                await msg.channel.send("There is something wrong with the request. Please try again later.")
+                await channel.send("There is something wrong with the request. Please try again later.")
                 return
             if int(clan_data['meta']['count']) != 1:
-                await msg.channel.send("Sorry, I did not find your clan. Please check again.")
+                await channel.send("Either no clan is found, or more than one. Give me your exact clan tag.")
                 return
-            inserted = self.db_handler \
-                .updateGuildClan(int(msg.author.guild.id), arr[1], self.get_clan_id(clan_data))
-            if inserted:
-                await msg.channel.send("Successfully updated your clan tag to [" + arr[1] + "]!")
-                return
-            else:
-                await msg.channel.send("Could not update your clan tag for some reason. Please try again later.")
-                return
+            clan_id = self.get_clan_id(clan_data)
+            self.db_handler.insert_clan_name_and_id(clan_tag, clan_id, region)
 
     def get_clan_id(self, clan_data):
         return int(clan_data['data'][0]['clan_id'])

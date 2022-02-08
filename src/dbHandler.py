@@ -3,13 +3,13 @@ import sqlite3
 
 class DbHandler:
 
-    def updateChannel(self, guild_id, channel_id, channel_type):
+    def updateChannel(self, guild_id, channel_id, channel_type, clan, region):
         try:
-            exists = self.channelExists(guild_id, channel_type)
+            exists = self.channelExists(guild_id, channel_id)
             if exists:
-                self.updateExistingChannel(guild_id, channel_id, channel_type)
+                self.updateExistingChannel(guild_id, channel_id, channel_type, clan, region)
             else:
-                self.insertChannel(guild_id, channel_id, channel_type)
+                self.insertChannel(guild_id, channel_id, channel_type, clan, region)
             return True
         except sqlite3.Error as er:
             print(er)
@@ -53,7 +53,7 @@ class DbHandler:
             return None
         return region[0][1]
 
-    def getClanAndChannel(self, channel_type):
+    def getChannelsAndClansInfo(self, channel_type):
         self.reconnect()
         cur = self.con.cursor()
         channels = cur.execute('SELECT * FROM channels WHERE type = ?', [channel_type]).fetchall()
@@ -110,35 +110,37 @@ class DbHandler:
         else:
             return False
 
-    def channelExists(self, guild_id, channel_type):
+    def channelExists(self, guild_id, channel_id):
         self.reconnect()
 
         cur = self.con.cursor()
         exists = cur.execute('SELECT EXISTS(SELECT 1 FROM channels '
-                             'WHERE channels.guildId = ? '
-                             'AND channels.type = ?);', [guild_id, channel_type]).fetchall()[0][0]
+                             'WHERE guildId = ? '
+                             'AND channelId = ?);', [guild_id, channel_id]).fetchall()[0][0]
         self.con.close()
         if exists == 1:
             return True
         else:
             return False
 
-    def updateExistingChannel(self, guild_id, channel_id, channel_type):
+    def updateExistingChannel(self, guild_id, channel_id, channel_type, clan, region):
         self.reconnect()
 
         cur = self.con.cursor()
         cur.execute("UPDATE channels "
-                    "SET channelId = ?"
-                    "WHERE guildId = ? "
-                    "AND type = ?;", [channel_id, guild_id, channel_type])
+                    "SET channelId = ?, "
+                    "type = ?, "
+                    "clan = ?, "
+                    "region = ? "
+                    "WHERE guildId = ? ", [channel_id, channel_type, clan, region, guild_id])
         self.con.commit()
         self.con.close()
 
-    def insertChannel(self, guild_id, channel_id, channel_type):
+    def insertChannel(self, guild_id, channel_id, channel_type, clan, region):
         self.reconnect()
 
         cur = self.con.cursor()
-        cur.execute("INSERT INTO channels VALUES (?, ?, ?);", [guild_id, channel_type, channel_id])
+        cur.execute("INSERT INTO channels VALUES (?, ?, ?, ?, ?);", [guild_id, channel_id, channel_type, clan, region])
 
         self.con.commit()
         self.con.close()
@@ -159,6 +161,46 @@ class DbHandler:
 
         cur = self.con.cursor()
         cur.execute("INSERT INTO clans VALUES (?, ?, ?);", [guild_id, clan_tag, clan_id])
+
+        self.con.commit()
+        self.con.close()
+
+    def delete_channel(self, channel_id, guild_id):
+        self.reconnect()
+
+        cur = self.con.cursor()
+        cur.execute('''DELETE FROM channels WHERE channelId = ? AND guildId = ?;''', [channel_id, guild_id])
+
+        self.con.commit()
+        self.con.close()
+
+    def clan_name_and_id_exists(self, clan_tag, region):
+        self.reconnect()
+
+        cur = self.con.cursor()
+        exists = cur.execute('SELECT EXISTS(SELECT 1 FROM clan_to_id WHERE clan = ? AND region = ?);'
+                             , [clan_tag, region]).fetchall()[0][0]
+        self.con.close()
+        if exists == 1:
+            return True
+        else:
+            return False
+
+    def get_clan_name_and_id(self, clan_tag, region):
+        self.reconnect()
+
+        cur = self.con.cursor()
+        result = cur.execute('''SELECT * FROM clan_to_id WHERE clan = ? AND region = ?''', [clan_tag, region]).fetchall()
+
+        self.con.commit()
+        self.con.close()
+        return result
+
+    def insert_clan_name_and_id(self, clan_tag, clan_id, region):
+        self.reconnect()
+
+        cur = self.con.cursor()
+        cur.execute('''INSERT INTO clan_to_id VALUES (?, ?, ?)''', [clan_tag, clan_id, region])
 
         self.con.commit()
         self.con.close()

@@ -45,10 +45,10 @@ class Province:
             provinces = self.wg_api.get_provinces(int(self.prime), self.front, self.region, self.map)
         except KeyError as e:
             await self.channel.send("WG API ERROR (retry)")
+            return
         data = list(map(lambda x: x['data'], provinces))
         flattened = list(itertools.chain(*data))
         # filtered = list(filter(lambda x: x['arena_id'] == self.map, flattened))
-        print(flattened)
         if self.region == 'ru':
             await self.channel.send(
                 "Найдено " + str(len(flattened)) + " провинций для карты - " + str(inv_maps[self.map]) +
@@ -142,7 +142,6 @@ class Province:
 
         embed.set_thumbnail(
             url="attachment://map.png")
-
         file = discord.File(map_to_picture[inv_maps[self.map]], filename="map.png")
         return embed, file
 
@@ -198,7 +197,7 @@ class Province:
                 value=self.generate_clans_string(clans[:three]), inline=False)
             embed.add_field(
                 name=region_map[self.region][clan_type] + ", " + region_map[self.region]['length'] + str(len(clans)),
-                value=self.generate_clans_string(clans[three+1:three*2]), inline=False)
+                value=self.generate_clans_string(clans[three:three*2]), inline=False)
             embed.add_field(
                 name=region_map[self.region][clan_type] + ", " + region_map[self.region]['length'] + str(len(clans)),
                 value=self.generate_clans_string(clans[three*2:]), inline=False)
@@ -297,11 +296,11 @@ maps_ru = {
     'Murovanka': '11_murovanka',
     'Cliff': '18_cliff',
     'Abbey': '19_monastery',
-    'Sand river': '28_desert',
+    'Sand River': '28_desert',
     'Redshire': '34_reshire',
     'Steppes': '35_steppes',
     'Fisherman\'s Bay': '36_fishing_bay',
-    'Mountain pass': '37_caucasus',
+    'Mountain Pass': '37_caucasus',
     'Live Oaks': '44_north_america',
     'Highway': '45_north_america',
     'Serene Coast': '47_canada_a',
@@ -313,7 +312,7 @@ maps_eu = {
     'Abbey': '19_monastery',
     'Berlin': '105_germany',
     'Karelia': '01_karelia',
-    'Mountain pass': '37_caucasus',
+    'Mountain Pass': '37_caucasus',
     'Overlord': '101_dday',
     'Pilsen': '114_czech',
     'Ruinberg': '08_ruinberg',
@@ -321,7 +320,7 @@ maps_eu = {
 
 maps_eu_2 = {
     'Cliff': '18_cliff',
-    'El hallouf': '29_el_hallouf',
+    'El Halluf': '29_el_hallouf',
     'Ensk': '06_ensk',
     'Erlenberg': '13_erlenberg',
     'Fisherman\'s Bay': '36_fishing_bay',
@@ -335,7 +334,7 @@ maps_eu_2 = {
     'Pearl River': '60_asia_miao',
     'Prokhorovka': '05_prohorovka',
     'Redshire': '34_reshire',
-    'Sand river': '28_desert',
+    'Sand River': '28_desert',
     'Serene Coast': '47_canada_a',
     'Siegfried line': '14_sigfried_line',
     'Steppes': '35_steppes',
@@ -345,22 +344,26 @@ maps_eu_2 = {
 
 maps_all = {
     'Cliff': '18_cliff',
-    'El hallouf': '29_el_hallouf',
+    'El Halluf': '29_el_hallouf',
     'Ensk': '06_ensk',
     'Erlenberg': '13_erlenberg',
     'Fisherman\'s Bay': '36_fishing_bay',
     'Highway': '45_north_america',
+    'Хайвей': '45_north_america',
     'Himmelsdorf': '04_himmelsdorf',
     'Lakeville': '07_lakeville',
     'Live Oaks': '44_north_america',
+    'Лайв Окс': '44_north_america',
     'Malinovka': '02_malinovka',
     'Mines': '10_hills',
     'Murovanka': '11_murovanka',
     'Pearl River': '60_asia_miao',
+    'Жемчужная река': '60_asia_miao',
     'Prokhorovka': '05_prohorovka',
     'Redshire': '34_reshire',
-    'Sand river': '28_desert',
+    'Sand River': '28_desert',
     'Serene Coast': '47_canada_a',
+    'Тихий берег': '47_canada_a',
     'Siegfried line': '14_sigfried_line',
     'Steppes': '35_steppes',
     'Tundra': '63_tundra',
@@ -368,7 +371,8 @@ maps_all = {
     'Abbey': '19_monastery',
     'Berlin': '105_germany',
     'Karelia': '01_karelia',
-    'Mountain pass': '37_caucasus',
+    'Mountain Pass': '37_caucasus',
+    'Перевал': '37_caucasus',
     'Overlord': '101_dday',
     'Pilsen': '114_czech',
     'Ruinberg': '08_ruinberg',
@@ -379,31 +383,49 @@ inv_maps = {v: k for k, v in maps_all.items()}
 
 map_to_picture = {
     'Westfield': 'src/maps/23_westfeld.png',
-    'Siegfried line': 'src/maps/14_siegfried_line.png',
+    'Вестфилд': 'src/maps/23_westfeld.png',
+    'Siegfried Line': 'src/maps/14_siegfried_line.png',
     'Erlenberg': 'src/maps/13_erlenberg.png',
-    'El hallouf': 'src/maps/29_el_hallouf.png',
+    'El Halluf': 'src/maps/29_el_hallouf.png',
     'Overlord': 'src/maps/101_dday.png',
     'Karelia': 'src/maps/01_karelia.png',
+    'Карелия': 'src/maps/01_karelia.png',
     'Malinovka': 'src/maps/02_malinovka.png',
+    'Малиновка': 'src/maps/02_malinovka.png',
     'Himmelsdorf': 'src/maps/04_himmelsdorf.png',
+    'Химмельсдорф': 'src/maps/04_himmelsdorf.png',
     'Prokhorovka': 'src/maps/05_prohorovka.png',
+    'Прохоровка': 'src/maps/05_prohorovka.png',
     'Ensk': 'src/maps/06_ensk.png',
+    'Энск': 'src/maps/06_ensk.png',
     'Lakeville': 'src/maps/07_lakeville.png',
+    'Лассвиль': 'src/maps/07_lakeville.png',
     'Ruinberg': 'src/maps/08_ruinberg.png',
-    'Hills': 'src/maps/10_hills.png',
+    'Руинберг': 'src/maps/08_ruinberg.png',
+    'Mines': 'src/maps/10_hills.png',
+    'Рудники': 'src/maps/10_hills.png',
     'Murovanka': 'src/maps/11_murovanka.png',
+    'Мурованка': 'src/maps/11_murovanka.png',
     'Cliff': 'src/maps/18_cliff.png',
+    'Утёс': 'src/maps/18_cliff.png',
     'Abbey': 'src/maps/19_monastery.png',
-    'Sand river': 'src/maps/28_desert.png',
+    'Монастырь': 'src/maps/19_monastery.png',
+    'Sand River': 'src/maps/28_desert.png',
+    'Песчаная река': 'src/maps/28_desert.png',
     'Redshire': 'src/maps/34_reshire.png',
+    'Редшир': 'src/maps/34_reshire.png',
     'Steppes': 'src/maps/35_steppes.png',
-    'Fishing Bay': 'src/maps/36_fishing_bay.png',
-    'Mountain pass': 'src/maps/37_caucasus.png',
+    'Степи': 'src/maps/35_steppes.png',
+    'Fisherman\'s Bay': 'src/maps/36_fishing_bay.png',
+    'Рыбацкая бухта': 'src/maps/36_fishing_bay.png',
+    'Mountain Pass': 'src/maps/37_caucasus.png',
+    'Перевал': 'src/maps/37_caucasus.png',
     'Live Oaks': 'src/maps/44_north_america.png',
     'Highway': 'src/maps/45_north_america.png',
     'Serene Coast': 'src/maps/47_canada_a.png',
     'Pearl River': 'src/maps/60_asia_miao.png',
     'Lost City': 'src/maps/95_lost_city.png',
+    'Затерянный город': 'src/maps/95_lost_city.png',
     'Pilsen': 'src/maps/114_czech.png',
     'Berlin': 'src/maps/105_germany.png'
 }
