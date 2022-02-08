@@ -2,7 +2,7 @@
 
 import sqlite3
 
-con = sqlite3.connect('./db/main.db')
+con = sqlite3.connect('db/main.db')
 
 cur = con.cursor()
 
@@ -13,7 +13,7 @@ cur = con.cursor()
 # cur.execute('DELETE FROM channels WHERE guildId=366915317496152075')
 # print(cur.execute('SELECT * from channels;').fetchall())
 # cur.execute('''INSERT into channels VALUES(819552499211042856, 940304860052602891, 'PFP', 'GIFTD', 'eu')''')
-print(cur.execute('SELECT * from clan_to_id;').fetchall()[0])
+print(cur.execute('SELECT * FROM channels WHERE type = "PFP";').fetchall())
 # guild_id = 819552499211042856
 # channel_id = 883506039205535784
 # cur.execute("UPDATE channels SET channelId = ? WHERE guildId = ?", [channel_id, guild_id])
