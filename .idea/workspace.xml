@@ -20,7 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4578d5f-5539-4422-9edf-e474f19610e5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/battles.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/battles.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/main.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/initdb.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/initdb.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/msgMapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/msgMapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/province.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/province.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +73,7 @@
       <recent name="C:\Users\twink\Documents\wot-discord" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.__main__">
+  <component name="RunManager" selected="Python.test">
     <configuration name="__main__" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="wot-discord" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -134,8 +140,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.__main__" />
-        <item itemvalue="Python.initdb" />
         <item itemvalue="Python.test" />
+        <item itemvalue="Python.initdb" />
       </list>
     </recent_temporary>
   </component>

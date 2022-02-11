@@ -13,7 +13,7 @@ cur = con.cursor()
 # cur.execute('DELETE FROM channels WHERE guildId=366915317496152075')
 # print(cur.execute('SELECT * from channels;').fetchall())
 # cur.execute('''INSERT into channels VALUES(819552499211042856, 940304860052602891, 'PFP', 'GIFTD', 'eu')''')
-print(cur.execute('SELECT * FROM channels WHERE type = "PFP";').fetchall())
+print(cur.execute('SELECT * FROM region').fetchall())
 # guild_id = 819552499211042856
 # channel_id = 883506039205535784
 # cur.execute("UPDATE channels SET channelId = ? WHERE guildId = ?", [channel_id, guild_id])

@@ -12,12 +12,6 @@ class MessageMapper:
         # All messages
         if msg.author.id == self.client.user.id:
             return
-        embed = Embed(
-            title="test"
-        )
-        embed.add_field(name="Test name", value="Test hyperlink [[tag]](https://stackoverflow.com) and another [one](https://www.youtube.com)")
-        # await msg.channel.send("Trying embed", embed=embed)
-
         if msg.content.startswith(">>region") and msg.author.guild_permissions.administrator:
             await msg.channel.send("Please select your region.", view=create_region_view(self.db_handler))
             return
@@ -62,13 +56,29 @@ class MessageMapper:
 
     async def display_battles_handler(self, msg):
         arr = msg.content.split(" ")
-        if len(arr) < 3 | len(arr) > 3:
+        if len(arr) < 3 or len(arr) > 4:
             await msg.channel.send("WRONG MSG. Example - >>bat MERCY ru")
             return
         clan = arr[1]
         region = arr[2]
+        selector = None
+        if region != 'eu' and region != 'ru':
+            await msg.channel.send("Region must be lower-case (NOT EU but eu, НЕ RU а ru)")
+        if len(arr) == 4:
+            try:
+                selector = int(arr[3])
+                if selector < 1 or selector > 2:
+                    await self.selector_except(msg)
+                    return
+            except Exception:
+                await self.selector_except(msg)
+                return
         await self.set_clan(clan, region, msg.channel)
-        await battles.bat_display(self.db_handler, self.wg_api, msg.channel, clan, region)
+        await battles.bat_display(self.db_handler, self.wg_api, msg.channel, clan, region, selector)
+
+    async def selector_except(self, msg):
+        await msg.channel.send(
+            "Last argument can be either nothing, 1 or 2 (1 for planned, 2 for battles, nothing for both)")
 
     async def setChannelHandler(self, msg):
         arr = msg.content.split(" ")

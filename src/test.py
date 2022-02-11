@@ -16,8 +16,8 @@ headers = {
             'X-CSRFToken': 'LZ9NIq0KJKZ0SFr5Ncu6pDX9aAgRDbBX',
             'X-Requested-With': 'XMLHttpRequest'
         }
-result = requests.get("https://worldoftanks.eu/eu/clanwars/rating/alley/users/search/by/clan/?event_id=confrontation&front_id=confrontation_bg&page=0&page_size=100&user=&clan=GIFTD", headers=headers)
-print(result.json()['accounts_ratings'])
+result = requests.get("https://ru.wargaming.net/clans/wot/207365/api/globalmap/", headers={'Accept': 'application/json'})
+print(result.json())
 # arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 # print(arr[:3])
 # print(arr[3:6])

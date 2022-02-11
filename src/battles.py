@@ -6,7 +6,7 @@ from discord import Embed
 from src.province import map_to_picture, is_none
 
 
-async def bat_display(db_handler, wg_api, discord_channel, clan, region):
+async def bat_display(db_handler, wg_api, discord_channel, clan, region, selector=None):
     clan_id = db_handler.get_clan_name_and_id(clan, region)
     if len(clan_id) == 0:
         return
@@ -15,22 +15,28 @@ async def bat_display(db_handler, wg_api, discord_channel, clan, region):
     planned = battles['planned_battles']
     planned = sorted(planned, key=lambda d: d['battle_time'])
     scheduled = battles['battles']
-    embeds, files = generate_embeds_planned(wg_api, planned, region)
-    for i, embed in enumerate(embeds):
-        file = files[i]
-        await discord_channel.send(embed=embed, file=file)
+    scheduled = sorted(scheduled, key=lambda d: d['battle_time'])
+    if selector == 1 or selector is None:
+        embeds, files = generate_embeds(wg_api, planned, region, "planned_embed")
+        for i, embed in enumerate(embeds):
+            file = files[i]
+            await discord_channel.send(embed=embed, file=file)
+    if selector == 2 or selector is None:
+        embeds, files = generate_embeds(wg_api, scheduled, region, "planned_embed")
+        for i, embed in enumerate(embeds):
+            file = files[i]
+            await discord_channel.send(embed=embed, file=file)
 
 
-def generate_embeds_planned(wg_api, planned, region):
+def generate_embeds(wg_api, planned, region, bat_type):
     embeds = []
     files = []
     for battle in planned:
         province_id = battle['province_id']
-        province_battles = wg_api.get_tournament_info(province_id, region)
 
         embed = Embed(
             color=discord.Color.gold(),
-            title=region_map[region]['planned_embed'] + battle['province_name'],
+            title=region_map[region][bat_type] + battle['province_name'],
             url=region_map[region]['province_base_url'] + battle['province_id']
         )
         prime = prime_to_local(battle['battle_time'], region)
@@ -39,12 +45,14 @@ def generate_embeds_planned(wg_api, planned, region):
         handle_is_attacker(embed, battle['is_attacker'], region)
         embed.add_field(name=region_map[region]['respawn_embed'], value=battle['arena_resp_number'], inline=True)
         handle_single_clan(wg_api, battle['province_owner_id'], embed, region, 'owner_embed')
-        handle_single_clan(wg_api, battle['enemy'], embed, region, 'enemy_embed')
+        handle_enemy(embed, region, battle['enemy'])
         embed.add_field(name=region_map[region]['server_embed'], value=battle['periphery'], inline=False)
         embed.add_field(
             name=region_map[region]['front_embed'], value=region_map[region]['fronts_inv'][battle['front_id']],
             inline=True)
-        handle_pretenders(province_battles, region, embed)
+        if type == "planned_embed":
+            province_battles = wg_api.get_tournament_info(province_id, region)
+            handle_pretenders(province_battles, region, embed)
         embeds.append(embed)
         embed.set_thumbnail(
             url="attachment://map.png")
@@ -52,6 +60,25 @@ def generate_embeds_planned(wg_api, planned, region):
         file = discord.File(map_to_picture[battle['arena_name']], filename="map.png")
         files.append(file)
     return embeds, files
+
+
+def handle_enemy(embed, region, enemy):
+    if is_none(enemy):
+        embed.add_field(
+            name=region_map[region]['enemy_embed'],
+            value="---------"
+        )
+        return
+    string = ""
+    global_map_elo = enemy['elo_rating_10']
+    clan_tag = enemy['tag']
+    clan_id = enemy['id']
+    string = string + "[[" + clan_tag + "]](" + region_map[region]['clan_base_url'] + str(clan_id) + \
+             ") - Elo = " + str(global_map_elo) + "\n"
+    embed.add_field(
+        name=region_map[region]['enemy_embed'],
+        value=string
+    )
 
 
 def handle_pretenders(battles, region, embed):
@@ -104,16 +131,16 @@ def handle_single_clan(wg_api, clan_id, embed, region, clan_type):
     string = string + "[[" + clan_tag + "]](" + region_map[region]['clan_base_url'] + str(clan_id) + \
              ") - Elo = " + str(global_map_elo) + "\n"
     embed.add_field(
-        name=region_map[region]['owner_embed'],
+        name=region_map[region][clan_type],
         value=string
     )
 
 
 def handle_is_attacker(embed, is_attacker, region):
     if is_attacker:
-        embed.add_field(name=region_map[region]['attacker_embed'], value="✅", inline=True)
+        embed.add_field(name=region_map[region]['attacker_embed'], value="🔴", inline=True)
     else:
-        embed.add_field(name=region_map[region]['attacker_embed'], value="❎", inline=True)
+        embed.add_field(name=region_map[region]['attacker_embed'], value="🟢", inline=True)
 
 
 def prime_to_local(prime, region):
@@ -163,12 +190,13 @@ ru = {
     'competitors_embed': "Турнирные кланы",
     'bonus_embed': "Бонусы провинции",
     'length': "Количество кланов - ",
-    'attacker_embed': "Мы атакуем?",
+    'attacker_embed': "Деф провинции?",
     'respawn_embed': "Респавн",
     'enemy_embed': "Противник",
     'fronts': fronts_ru,
     'fronts_inv': fronts_ru_inv,
-    'pretenders': "Претенденты"
+    'pretenders': "Претенденты",
+    'battles_embed': "Назначенный бой:"
 }
 
 eu = {
@@ -191,12 +219,13 @@ eu = {
     'competitors_embed': "Competitors clans",
     'bonus_embed': "Province bonuses",
     'length': "Number of clans - ",
-    'attacker_embed': "We attac?",
+    'attacker_embed': "Defence?",
     'respawn_embed': "Respawn",
     'enemy_embed': "Enemy",
     'fronts': fronts_eu,
     'fronts_inv': fronts_eu_inv,
-    'pretenders': "Pretenders"
+    'pretenders': "Pretenders",
+    'battles_embed': "Battle:"
 }
 
 region_map = {
