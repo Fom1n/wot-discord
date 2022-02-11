@@ -430,7 +430,9 @@ map_to_picture = {
     'Затерянный город': 'src/maps/95_lost_city.png',
     'Pilsen': 'src/maps/114_czech.png',
     'Berlin': 'src/maps/105_germany.png',
-    'Paris': 'src/maps/112_eiffel_tower_ctf.png'
+    'Paris': 'src/maps/112_eiffel_tower_ctf.png',
+    'Safe Haven': 'src/maps/127_japort.png',
+    'Studzianki': 'src/maps/99_poland.png'
 }
 
 prime_times_eu = {
