@@ -22,7 +22,7 @@ async def bat_display(db_handler, wg_api, discord_channel, clan, region, selecto
             file = files[i]
             await discord_channel.send(embed=embed, file=file)
     if selector == 2 or selector is None:
-        embeds, files = generate_embeds(wg_api, scheduled, region, "planned_embed")
+        embeds, files = generate_embeds(wg_api, scheduled, region, "battles_embed")
         for i, embed in enumerate(embeds):
             file = files[i]
             await discord_channel.send(embed=embed, file=file)
