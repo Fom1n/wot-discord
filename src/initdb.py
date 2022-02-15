@@ -14,6 +14,7 @@ cur = con.cursor()
 # print(cur.execute('SELECT * from channels;').fetchall())
 # cur.execute('''INSERT into channels VALUES(819552499211042856, 940304860052602891, 'PFP', 'GIFTD', 'eu')''')
 print(cur.execute('SELECT * FROM clan_to_id').fetchall())
+print(cur.execute('SELECT * FROM channels').fetchall())
 # guild_id = 819552499211042856
 # channel_id = 883506039205535784
 # cur.execute("UPDATE channels SET channelId = ? WHERE guildId = ?", [channel_id, guild_id])

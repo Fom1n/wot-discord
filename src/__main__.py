@@ -32,6 +32,8 @@ scheduler = Scheduler(client, db_handler, mapper, wg_api, clan_utils)
 @client.event
 async def on_ready():
     autoupdate.start()
+    for server in client.guilds:
+        print(server.name)
 
 
 @tasks.loop(hours=1)
