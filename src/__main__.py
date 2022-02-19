@@ -42,11 +42,12 @@ async def autoupdate():
     await scheduler.schedule_pfp_update()
     # await scheduler.schedule_bat_update()
 
+
 @autoupdate.before_loop
 async def before():
     await client.wait_until_ready()
-#
-#
+
+
 @client.event
 async def on_message(message):
     # print(message.author.guild_permissions.administrator)

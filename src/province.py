@@ -305,7 +305,7 @@ maps_ru = {
     'Highway': '45_north_america',
     'Serene Coast': '47_canada_a',
     'Pearl River': '60_asia_miao',
-    'Lost City': '95_lost_city',
+    'Lost City': '95_lost_city_ctf',
 }
 
 maps_eu = {
@@ -377,7 +377,7 @@ maps_all = {
     'Overlord': '101_dday',
     'Pilsen': '114_czech',
     'Ruinberg': '08_ruinberg',
-    'Lost City': '95_lost_city',
+    'Lost City': '95_lost_city_ctf',
     'Paris': '112_eiffel_tower_ctf'
 }
 
@@ -426,8 +426,8 @@ map_to_picture = {
     'Highway': 'src/maps/45_north_america.png',
     'Serene Coast': 'src/maps/47_canada_a.png',
     'Pearl River': 'src/maps/60_asia_miao.png',
-    'Lost City': 'src/maps/95_lost_city.png',
-    'Затерянный город': 'src/maps/95_lost_city.png',
+    'Lost City': 'src/maps/95_lost_city_ctf.png',
+    'Затерянный город': 'src/maps/95_lost_city_ctf.png',
     'Pilsen': 'src/maps/114_czech.png',
     'Berlin': 'src/maps/105_germany.png',
     'Paris': 'src/maps/112_eiffel_tower_ctf.png',
